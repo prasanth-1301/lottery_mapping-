@@ -226,12 +226,11 @@ header[data-testid="stHeader"] {
 
 
 # ============================================================
-# GENERATE ALL ASSIGNED COMBINATIONS
+# GENERATE ALL UNIQUE ASSIGNED COMBINATIONS
 # ============================================================
 
 def generate_all_possibilities(number):
 
-    # Get assigned numbers for every input digit
     digit_options = [
         list(dict.fromkeys(DIGIT_MAP[digit]))
         for digit in number
@@ -239,7 +238,7 @@ def generate_all_possibilities(number):
 
     possibilities = []
 
-    # Generate combinations by replacing EVERY digit
+    # Replace EVERY digit using its assigned mapping
     for combination in product(*digit_options):
 
         new_number = "".join(combination)
@@ -251,26 +250,25 @@ def generate_all_possibilities(number):
 
 
 # ============================================================
-# GENERATE 5 RESULTS
+# GENERATE 3 POSSIBILITIES
 # ============================================================
 
 def generate_results(number):
 
     all_possibilities = generate_all_possibilities(number)
 
-    if len(all_possibilities) < 5:
+    if len(all_possibilities) < 3:
         return False
 
     # --------------------------------------------------------
-    # NEW INPUT
-    # GENERATE ALL 5 POSSIBILITIES
+    # NEW INPUT: GENERATE 3 UNIQUE POSSIBILITIES
     # --------------------------------------------------------
 
     if st.session_state.last_number != number:
 
         st.session_state.results = random.sample(
             all_possibilities,
-            5
+            3
         )
 
         st.session_state.last_number = number
@@ -279,31 +277,29 @@ def generate_results(number):
         return True
 
     # --------------------------------------------------------
-    # SAME INPUT
-    # KEEP FIRST FOUR FIXED
-    # CHANGE ONLY FIFTH
+    # SAME INPUT: KEEP FIRST 2 FIXED
+    # CHANGE ONLY THIRD POSSIBILITY
     # --------------------------------------------------------
 
     current_results = st.session_state.results
 
-    fixed_four = current_results[:4]
+    fixed_two = current_results[:2]
 
-    current_fifth = current_results[4]
+    current_third = current_results[2]
 
-    # Exclude first four and currently displayed fifth
     unused = [
         possibility
         for possibility in all_possibilities
-        if possibility not in fixed_four
-        and possibility != current_fifth
+        if possibility not in fixed_two
+        and possibility != current_third
     ]
 
-    # Pick another unique fifth possibility
     if unused:
 
-        current_results[4] = random.choice(unused)
+        current_results[2] = random.choice(unused)
 
     st.session_state.results = current_results
+
     st.session_state.display_number = number
 
     return True
@@ -319,7 +315,7 @@ st.markdown(
 )
 
 st.markdown(
-    '<div class="subtitle">Generate 5 assigned number possibilities</div>',
+    '<div class="subtitle">Generate 3 assigned number possibilities</div>',
     unsafe_allow_html=True
 )
 
@@ -350,7 +346,7 @@ st.write("")
 # ============================================================
 
 if st.button(
-    "✨ Generate 5 Possibilities",
+    "✨ Generate 3 Possibilities",
     type="primary",
     use_container_width=True
 ):
@@ -396,12 +392,12 @@ if st.session_state.error:
 # ============================================================
 
 if (
-    st.session_state.results
+    len(st.session_state.results) == 3
     and st.session_state.display_number
 ):
 
     st.markdown(
-        '<div class="result-heading">🎯 Your 5 Possibilities</div>',
+        '<div class="result-heading">🎯 Your 3 Possibilities</div>',
         unsafe_allow_html=True
     )
 
@@ -442,8 +438,8 @@ if (
     st.markdown(
         """
         <div class="footer">
-            First 4 possibilities stay fixed.
-            Only the 5th possibility changes on every click.
+            First 2 possibilities stay fixed.
+            Only the 3rd possibility changes on every click.
         </div>
         """,
         unsafe_allow_html=True
@@ -468,7 +464,7 @@ else:
                 font-size:13px;
                 margin-top:8px;
             ">
-                Enter your number above to get 5 possibilities.
+                Enter your number above to get 3 possibilities.
             </div>
         </div>
         """,
