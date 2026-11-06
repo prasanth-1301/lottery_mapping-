@@ -238,7 +238,7 @@ def generate_all_possibilities(number):
 
     possibilities = []
 
-    # Replace EVERY digit using its assigned mapping
+    # Replace EVERY digit using assigned mapping
     for combination in product(*digit_options):
 
         new_number = "".join(combination)
@@ -250,25 +250,25 @@ def generate_all_possibilities(number):
 
 
 # ============================================================
-# GENERATE 3 POSSIBILITIES
+# GENERATE 2 POSSIBILITIES
 # ============================================================
 
 def generate_results(number):
 
     all_possibilities = generate_all_possibilities(number)
 
-    if len(all_possibilities) < 3:
+    if len(all_possibilities) < 2:
         return False
 
     # --------------------------------------------------------
-    # NEW INPUT: GENERATE 3 UNIQUE POSSIBILITIES
+    # NEW INPUT: GENERATE 2 UNIQUE POSSIBILITIES
     # --------------------------------------------------------
 
     if st.session_state.last_number != number:
 
         st.session_state.results = random.sample(
             all_possibilities,
-            3
+            2
         )
 
         st.session_state.last_number = number
@@ -277,26 +277,27 @@ def generate_results(number):
         return True
 
     # --------------------------------------------------------
-    # SAME INPUT: KEEP FIRST 2 FIXED
-    # CHANGE ONLY THIRD POSSIBILITY
+    # SAME INPUT: KEEP FIRST FIXED
+    # CHANGE ONLY SECOND POSSIBILITY
     # --------------------------------------------------------
 
     current_results = st.session_state.results
 
-    fixed_two = current_results[:2]
+    fixed_first = current_results[0]
 
-    current_third = current_results[2]
+    current_second = current_results[1]
 
     unused = [
         possibility
         for possibility in all_possibilities
-        if possibility not in fixed_two
-        and possibility != current_third
+        if possibility != fixed_first
+        and possibility != current_second
     ]
 
+    # Change only second possibility
     if unused:
 
-        current_results[2] = random.choice(unused)
+        current_results[1] = random.choice(unused)
 
     st.session_state.results = current_results
 
@@ -315,7 +316,7 @@ st.markdown(
 )
 
 st.markdown(
-    '<div class="subtitle">Generate 3 assigned number possibilities</div>',
+    '<div class="subtitle">Generate 2 assigned number possibilities</div>',
     unsafe_allow_html=True
 )
 
@@ -346,7 +347,7 @@ st.write("")
 # ============================================================
 
 if st.button(
-    "✨ Generate 3 Possibilities",
+    "✨ Generate 2 Possibilities",
     type="primary",
     use_container_width=True
 ):
@@ -392,12 +393,12 @@ if st.session_state.error:
 # ============================================================
 
 if (
-    len(st.session_state.results) == 3
+    len(st.session_state.results) == 2
     and st.session_state.display_number
 ):
 
     st.markdown(
-        '<div class="result-heading">🎯 Your 3 Possibilities</div>',
+        '<div class="result-heading">🎯 Your 2 Possibilities</div>',
         unsafe_allow_html=True
     )
 
@@ -438,8 +439,8 @@ if (
     st.markdown(
         """
         <div class="footer">
-            First 2 possibilities stay fixed.
-            Only the 3rd possibility changes on every click.
+            First possibility stays fixed.
+            Only the second possibility changes on every click.
         </div>
         """,
         unsafe_allow_html=True
@@ -464,7 +465,7 @@ else:
                 font-size:13px;
                 margin-top:8px;
             ">
-                Enter your number above to get 3 possibilities.
+                Enter your number above to get 2 possibilities.
             </div>
         </div>
         """,
